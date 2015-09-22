@@ -1,4 +1,4 @@
-# RohBot Imperial to Metric converter
+# RohBot Imperial to Metric Converter
 
 Automatically finds and converts the most common imperial units to metric. Only works in [RohBot](https://rohbot.net).
 
