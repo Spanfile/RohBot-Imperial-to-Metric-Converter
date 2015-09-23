@@ -12,8 +12,8 @@ chatMgr.lineFilter.add(function (line, prepend, e) {
 	line.Content = applyConversions(line.Content, feet, inches, yards, fahrenheit, pounds, ounces, gallons, mph);
 });
 
-String.prototype.splice = function(idx, s) {
-	return (this.slice(0, idx) + s + this.slice(idx));
+String.prototype.splice = function(idx, rem, s) {
+	return (this.slice(0, idx) + s + this.slice(idx + Math.abs(rem)));
 };
 
 function applyConversions(message) {
@@ -30,6 +30,7 @@ function applyConversions(message) {
 		}
 	});
 	
+	// sort them
 	results.sort(function(a, b) {
 		if (a.index > b.index) {
 			return 1;
@@ -46,9 +47,10 @@ function applyConversions(message) {
 	var inserted = 0;
 	// combine them all
 	results.forEach(function(result) {
-		var toInsert = " (" + result.conversion.toLocaleString() + " " + result.unit + ")";
-		newMsg = newMsg.splice(result.index + inserted, toInsert);
-		inserted += toInsert.length;
+		var title = result.conversion.toLocaleString() + " " + result.unit
+		var toInsert = "<a title=\"" + title + "\">" + result.original + "</a>";
+		newMsg = newMsg.splice(result.index + inserted, result.original.length, toInsert);
+		inserted += toInsert.length - result.original.length;
 	});
 
 	return newMsg;
@@ -64,7 +66,7 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		var amount = Number(m[1]);
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
 		console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
-		return {index:regex.lastIndex, conversion:converted, unit:unit};
+		return {original:m[0], index:m.index, conversion:converted, unit:unit};
 	}
 
 	return null;
