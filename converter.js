@@ -48,7 +48,7 @@ function applyConversions(message) {
 	// combine them all
 	results.forEach(function(result) {
 		var title = result.conversion.toLocaleString() + " " + result.unit
-		var toInsert = "<a title=\"" + title + "\">" + result.original + "</a>";
+		var toInsert = "<abbr title=\"" + title + "\" style=\"cursor:help; border-bottom:1px dotted #777\">" + result.original + "</abbr>";
 		newMsg = newMsg.splice(result.index + inserted, result.original.length, toInsert);
 		inserted += toInsert.length - result.original.length;
 	});
@@ -65,7 +65,7 @@ function commonConversion(message, regex, divide, subtract, unit) {
 
 		var amount = Number(m[1]);
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
-		console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
+		//console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
 		return {original:m[0], index:m.index, conversion:converted, unit:unit};
 	}
 
