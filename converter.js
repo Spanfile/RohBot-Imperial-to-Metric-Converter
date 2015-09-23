@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.0
+// @version      1.1
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
