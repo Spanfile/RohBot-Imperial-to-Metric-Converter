@@ -73,33 +73,33 @@ function commonConversion(message, regex, divide, subtract, unit) {
 }
 
 function feet(message) {
-	return commonConversion(message, /\b(\d+) ?(ft|feet)\b/ig, 3.2808, 0, "meters");
+	return commonConversion(message, /\b(\b\d+(?:(?:\.|,)\d+\b|\b)) ?(ft|feet)\b/ig, 3.2808, 0, "meters");
 }
 
 function inches(message) {
-	return commonConversion(message, /\b(\d+) ?(in|inches|inch)\b/ig, 3.2808, 0, "centimeters");
+	return commonConversion(message, /\b(\b\d+(?:(?:\.|,)\d+\b|\b)) ?(in|inches|inch)\b/ig, 3.2808, 0, "centimeters");
 }
 
 function yards(message) {
-	return commonConversion(message, /\b(\d+) ?(yd|yards|yard)\b/ig, 1.0936, 0, "meters");
+	return commonConversion(message, /\b(\b\d+(?:(?:\.|,)\d+\b|\b)) ?(yd|yards|yard)\b/ig, 1.0936, 0, "meters");
 }
 
 function fahrenheit(message) {
-	return commonConversion(message, /\b(\d+) ?(f|fahrenheit)\b/ig, 1.8, 32, "Celsius");
+	return commonConversion(message, /\b(\b\d+(?:(?:\.|,)\d+\b|\b)) ?(f|fahrenheit)\b/ig, 1.8, 32, "Celsius");
 }
 
 function pounds(message) {
-	return commonConversion(message, /\b(\d+) ?(lb|lbs|pounds|pound)\b/ig, 2.2046, 0, "kilograms");
+	return commonConversion(message, /\b(\b\d+(?:(?:\.|,)\d+\b|\b)) ?(lb|lbs|pounds|pound)\b/ig, 2.2046, 0, "kilograms");
 }
 
 function ounces(message) {
-	return commonConversion(message, /\b(\d+) ?(oz|ounces|ounce)\b/ig, 0.035274, 0, "grams");
+	return commonConversion(message, /\b(\b\d+(?:(?:\.|,)\d+\b|\b)) ?(oz|ounces|ounce)\b/ig, 0.035274, 0, "grams");
 }
 
 function gallons(message) {
-	return commonConversion(message, /\b(\d+) ?(gal|gallons|gallon)\b/ig, 0.26417, 0, "liters");
+	return commonConversion(message, /\b(\b\d+(?:(?:\.|,)\d+\b|\b)) ?(gal|gallons|gallon)\b/ig, 0.26417, 0, "liters");
 }
 
 function mph(message) {
-	return commonConversion(message, /\b(\d+) ?(mph|miles per hour)\b/ig, 1/1.6093, 0, "KPH");
+	return commonConversion(message, /\b(\b\d+(?:(?:\.|,)\d+\b|\b)) ?(mph|miles per hour)\b/ig, 1/1.6093, 0, "KPH");
 }
