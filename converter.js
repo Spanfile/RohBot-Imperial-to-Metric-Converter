@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.1.1
+// @version      1.2
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -72,11 +72,11 @@ function commonConversion(message, regex, divide, subtract, unit) {
 }
 
 function feet(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(ft|feet|foot)\b/ig, 3.2808, 0, "meters");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(ft|feet|foot)\b/ig, 3.2808, 0, "meters");
 }
 
 function inches(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(in|inches|inch)\b/ig, 0.39370, 0, "centimeters");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(in|inches|inch)\b/ig, 0.39370, 0, "centimeters");
 }
 
 function feetAndInches(message) {
@@ -107,25 +107,25 @@ function feetAndInches(message) {
 }
 
 function yards(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(yd|yards|yard)\b/ig, 1.0936, 0, "meters");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(yd|yards|yard)\b/ig, 1.0936, 0, "meters");
 }
 
 function fahrenheit(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(f|fahrenheit|degrees fahrenheit)\b/ig, 1.8, 32, "Celsius");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(f|fahrenheit|degrees fahrenheit)\b/ig, 1.8, 32, "Celsius");
 }
 
 function pounds(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(lb|lbs|pounds|pound)\b/ig, 2.2046, 0, "kilograms");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(lb|lbs|pounds|pound)\b/ig, 2.2046, 0, "kilograms");
 }
 
 function ounces(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(oz|ounces|ounce)\b/ig, 0.035274, 0, "grams");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(oz|ounces|ounce)\b/ig, 0.035274, 0, "grams");
 }
 
 function gallons(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(gal|gallons|gallon)\b/ig, 0.26417, 0, "liters");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(gal|gallons|gallon)\b/ig, 0.26417, 0, "liters");
 }
 
 function mph(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(mph|miles per hour)\b/ig, 1/1.6093, 0, "KPH");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(mph|miles per hour)\b/ig, 1/1.6093, 0, "KPH");
 }
