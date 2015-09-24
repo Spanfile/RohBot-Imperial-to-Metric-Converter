@@ -7,8 +7,10 @@ Only tested in Chrome using [Tampermonkey](http://tampermonkey.net/).
 ### Currently supports the following conversions:
 * Feet to meters
 * Inches to centimeters
+* That weird feet + inch notation (ex. 5'11) to meters
 * Yards to meters
 * Fahrenheit to Celsius
+* Stones to kilograms
 * Pounds to kilograms
 * Ounces to grams
 * Gallons to liters
