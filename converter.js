@@ -8,7 +8,7 @@
 // ==/UserScript==
 
 chatMgr.lineFilter.add(function (line, prepend, e) {
-	line.Content = applyConversions(line.Content, feet, inches, feetAndInches, yards, fahrenheit, pounds, ounces, gallons, mph);
+	line.Content = applyConversions(line.Content, feet, inches, feetAndInches, yards, fahrenheit, pounds, ounces, gallons, mph, stone);
 });
 
 String.prototype.splice = function(idx, rem, s) {
@@ -118,6 +118,10 @@ function pounds(message) {
 	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(lb|lbs|pounds|pound)\b/ig, 2.2046, 0, "kilograms");
 }
 
+function stone(message) {
+    return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(st|stone)\b/ig, 0.157473, 0, "kilograms");
+}
+
 function ounces(message) {
 	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(oz|ounces|ounce)\b/ig, 0.035274, 0, "grams");
 }
@@ -129,3 +133,4 @@ function gallons(message) {
 function mph(message) {
 	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(mph|miles per hour)\b/ig, 1/1.6093, 0, "KPH");
 }
+
