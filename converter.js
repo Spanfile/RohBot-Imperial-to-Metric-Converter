@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.2
+// @version      1.3
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -133,4 +133,3 @@ function gallons(message) {
 function mph(message) {
 	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?) ?(mph|miles per hour)\b/ig, 1/1.6093, 0, "KPH");
 }
-
