@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.1
+// @version      1.1.1
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -8,7 +8,6 @@
 // ==/UserScript==
 
 chatMgr.lineFilter.add(function (line, prepend, e) {
-	e.filtered = false;
 	line.Content = applyConversions(line.Content, feet, inches, feetAndInches, yards, fahrenheit, pounds, ounces, gallons, mph);
 });
 
@@ -112,7 +111,7 @@ function yards(message) {
 }
 
 function fahrenheit(message) {
-	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(f|fahrenheit)\b/ig, 1.8, 32, "Celsius");
+	return commonConversion(message, /(\b\d+(?:(?:\.|,)\d+)?\b) ?(f|fahrenheit|degrees fahrenheit)\b/ig, 1.8, 32, "Celsius");
 }
 
 function pounds(message) {
