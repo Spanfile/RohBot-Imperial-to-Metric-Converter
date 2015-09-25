@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.5
+// @version      1.6
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -48,12 +48,14 @@ function applyConversions(message) {
 	results.forEach(function(result) {
 		var title = result.conversion.toLocaleString() + " " + result.unit;
 		var original = result.original;
+		var begin = "";
 		
 		if (original.substring(0, 1) == " ") {
 			original = original.substring(1);
+			begin = " ";
 		}
 		
-		var toInsert = " <abbr title=\"" + title + "\" style=\"cursor:help; border-bottom:1px dotted #777\">" + original + "</abbr>";
+		var toInsert = begin + "<abbr title=\"" + title + "\" style=\"cursor:help; border-bottom:1px dotted #777\">" + original + "</abbr>";
 		newMsg = newMsg.splice(result.index + inserted, result.original.length, toInsert);
 		inserted += toInsert.length - result.original.length;
 	});
@@ -78,7 +80,7 @@ function commonConversion(message, regex, divide, subtract, unit) {
 }
 
 function feet(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(ft|feet|foot)(?=\s|$)/ig, 3.2808, 0, "meters");
+	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(ft|feet|foot|&quot;)(?=\s|$)/ig, 3.2808, 0, "meters");
 }
 
 function inches(message) {
@@ -89,7 +91,6 @@ function feetAndInches(message) {
 	// the &#39; there in the middle is for '
 	var regex = /(?:\s|^)(\d+(?:(?:\.|,)\d+)?)&#39;(\d+(?:(?:\.|,)\d+)?)?(?=\s|$)/ig;
 	var m;
-	console.log(message);
 	while ((m = regex.exec(message)) !== null) {
 		if (m.index === regex.lastIndex) {
 			regex.lastIndex++;
