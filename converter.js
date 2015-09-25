@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.6
+// @version      1.7
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -50,6 +50,9 @@ function applyConversions(message) {
 		var original = result.original;
 		var begin = "";
 		
+		// because the js regex engine doesn't support positive lookbehinds, the regexes return the whitespace before every match
+		// most of the time they do it unless the match is at the start of the message
+		// in case there is a whitespace, remove it and have one added before the <abbr> tag
 		if (original.substring(0, 1) == " ") {
 			original = original.substring(1);
 			begin = " ";
@@ -80,11 +83,11 @@ function commonConversion(message, regex, divide, subtract, unit) {
 }
 
 function feet(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(ft|feet|foot|&quot;)(?=\s|$)/ig, 3.2808, 0, "meters");
+	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(ft|feet|foot)(?=\s|$)/ig, 3.2808, 0, "meters");
 }
 
 function inches(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(in|inches|inch)(?=\s|$)/ig, 0.39370, 0, "centimeters");
+	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(in|inches|inch|&quot;)(?=\s|$)/ig, 0.39370, 0, "centimeters");
 }
 
 function feetAndInches(message) {
