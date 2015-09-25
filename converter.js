@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.3
+// @version      1.4
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -62,7 +62,7 @@ function commonConversion(message, regex, divide, subtract, unit) {
 			regex.lastIndex++;
 		}
 
-		var amount = Number(m[1]);
+		var amount = Number(m[1].replace(',', '.')); // js wants dots as decimal separators
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
 		//console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
 		return {original:m[0], index:m.index, conversion:converted, unit:unit};
@@ -89,11 +89,11 @@ function feetAndInches(message) {
 			regex.lastIndex++;
 		}
 		
-		var feet = m[1];
+		var feet = m[1].replace(',', '.');
 		var inches = 0;
 		
 		if (m[2] != null) {
-			inches = m[2];
+			inches = m[2].replace(',', '.');
 		}
 		
 		var convertedFeet = feet / 3.2808;
