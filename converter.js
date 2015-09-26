@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.9
+// @version      1.10
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -9,29 +9,74 @@
 // ==/UserScript==
 
 chatMgr.lineFilter.add(function (line, prepend, e) {
-	line.Content = applyConversions(line.Content, feet, inches, feetAndInches, yards, fahrenheit, pounds, ounces, gallons, mph, stone);
+	line.Content = applyConversions(line.Content);
 });
 
 String.prototype.splice = function(idx, rem, s) {
 	return (this.slice(0, idx) + s + this.slice(idx + Math.abs(rem)));
 };
 
+var conversions = [
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(ft|feet|foot)(?=\s|$)/ig, 3.2808, 0, "meters"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(yd|yards|yard)(?=\s|$)/ig, 1.0936, 0, "meters"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(in|inches|inch|&quot;)(?=\s|$)/ig, 0.39370, 0, "centimeters"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(yd|yards|yard)(?=\s|$)/ig, 1.0936, 0, "meters"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(f|fahrenheit|degrees fahrenheit)(?=\s|$)/ig, 1.8, 32, "Celsius"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(lb|lbs|pounds|pound)(?=\s|$)/ig, 2.2046, 0, "kilograms"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(st|stone)(?=\s|$)/ig, 0.157473, 0, "kilograms"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(oz|ounces|ounce)(?=\s|$)/ig, 0.035274, 0, "grams"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(gal|gallons|gallon)(?=\s|$)/ig, 0.26417, 0, "liters"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(mph|miles per hour)(?=\s|$)/ig, 1/1.6093, 0, "KPH"); },
+	
+	function(message) {
+		// the &#39; there in the middle is for '
+		var regex = /(?:\s|^)(\d+(?:(?:\.|,)\d+)?)&#39;(\d+(?:(?:\.|,)\d+)?)?(?=\s|$)/ig;
+		var m;
+		var results = [];
+		while ((m = regex.exec(message)) !== null) {
+			if (m.index === regex.lastIndex) {
+				regex.lastIndex++;
+			}
+
+			var feet = m[1].replace(',', '.');
+			var inches = 0;
+
+			if (m[2] != null) {
+				inches = m[2].replace(',', '.');
+			}
+
+			var convertedFeet = feet / 3.2808;
+			var convertedInches = inches / 39.370;
+
+			var total = Math.round((convertedFeet + convertedInches) * 100) / 100;
+			results[results.length] = {original:m[0], index:m.index, conversion:total, unit:"meters"};
+		}
+
+		return results;
+	}
+];
+
 function applyConversions(message) {
-	var funcs = Array.slice(arguments, 1);
 	var results = [];
 	var lastIndex = 0;
 
 	// aggregate the results
-	funcs.forEach(function(func) {
-		var result = func(message);
+	conversions.forEach(function(converter) {
+		var result = converter(message);
 
-		if (result !== null) {
+		if (result.length > 0) {
+			console.log(result);
 			results.splice(lastIndex++, 0, result);
 		}
 	});
 	
+	// since the converters can return multiple conversions, flatten the results
+	// the result looks like [[{stuff here}, {stuff here}], [{stuff here}, {stuff here}]]
+	// flattening it turns it into [{stuff here}, {stuff here}, {stuff here}, {stuff here}]
+	var flattened = [].concat.apply([], results);
+	
 	// sort them
-	results.sort(function(a, b) {
+	flattened.sort(function(a, b) {
 		if (a.index > b.index) {
 			return 1;
 		}
@@ -46,7 +91,7 @@ function applyConversions(message) {
 	var newMsg = message;
 	var inserted = 0;
 	// combine them all
-	results.forEach(function(result) {
+	flattened.forEach(function(result) {
 		var title = result.conversion.toLocaleString() + " " + result.unit;
 		var original = result.original;
 		var begin = "";
@@ -69,6 +114,7 @@ function applyConversions(message) {
 
 function commonConversion(message, regex, divide, subtract, unit) {
 	var m;
+	var results = [];
 	while ((m = regex.exec(message)) !== null) {
 		if (m.index === regex.lastIndex) {
 			regex.lastIndex++;
@@ -77,70 +123,8 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		var amount = Number(m[1].replace(',', '.')); // js wants dots as decimal separators
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
 		//console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
-		return {original:m[0], index:m.index, conversion:converted, unit:unit};
+		results[results.length] = {original:m[0], index:m.index, conversion:converted, unit:unit};
 	}
 
-	return null;
-}
-
-function feet(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(ft|feet|foot)(?=\s|$)/ig, 3.2808, 0, "meters");
-}
-
-function inches(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(in|inches|inch|&quot;)(?=\s|$)/ig, 0.39370, 0, "centimeters");
-}
-
-function feetAndInches(message) {
-	// the &#39; there in the middle is for '
-	var regex = /(?:\s|^)(\d+(?:(?:\.|,)\d+)?)&#39;(\d+(?:(?:\.|,)\d+)?)?(?=\s|$)/ig;
-	var m;
-	while ((m = regex.exec(message)) !== null) {
-		if (m.index === regex.lastIndex) {
-			regex.lastIndex++;
-		}
-		
-		var feet = m[1].replace(',', '.');
-		var inches = 0;
-		
-		if (m[2] != null) {
-			inches = m[2].replace(',', '.');
-		}
-		
-		var convertedFeet = feet / 3.2808;
-		var convertedInches = inches / 39.370;
-		
-		var total = Math.round((convertedFeet + convertedInches) * 100) / 100;
-		return {original:m[0], index:m.index, conversion:total, unit:"meters"};
-	}
-	
-	return null;
-}
-
-function yards(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(yd|yards|yard)(?=\s|$)/ig, 1.0936, 0, "meters");
-}
-
-function fahrenheit(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(f|fahrenheit|degrees fahrenheit)(?=\s|$)/ig, 1.8, 32, "Celsius");
-}
-
-function pounds(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(lb|lbs|pounds|pound)(?=\s|$)/ig, 2.2046, 0, "kilograms");
-}
-
-function stone(message) {
-    return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(st|stone)(?=\s|$)/ig, 0.157473, 0, "kilograms");
-}
-
-function ounces(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(oz|ounces|ounce)(?=\s|$)/ig, 0.035274, 0, "grams");
-}
-
-function gallons(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(gal|gallons|gallon)(?=\s|$)/ig, 0.26417, 0, "liters");
-}
-
-function mph(message) {
-	return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(mph|miles per hour)(?=\s|$)/ig, 1/1.6093, 0, "KPH");
+	return results;
 }
