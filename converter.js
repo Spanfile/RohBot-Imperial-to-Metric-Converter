@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.8
+// @version      1.9
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
 // @grant        none
-// @updateURL	 https://gitlab.com/Spans/RohBot-Imperial-to-Metric-converter/raw/master/converter.js
+// @updateURL	 https://raw.githubusercontent.com/Spanfile/RohBot-Imperial-to-Metric-Converter/master/converter.js
 // ==/UserScript==
 
 chatMgr.lineFilter.add(function (line, prepend, e) {
