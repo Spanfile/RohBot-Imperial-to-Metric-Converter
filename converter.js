@@ -66,7 +66,7 @@ function applyConversions(message) {
 		var result = converter(message);
 
 		if (result.length > 0) {
-			console.log(result);
+			//console.log(result);
 			results.splice(lastIndex++, 0, result);
 		}
 	});
