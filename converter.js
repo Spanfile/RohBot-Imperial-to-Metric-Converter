@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.10
+// @version      1.11
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -21,6 +21,7 @@ var conversions = [
 	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(yd|yards|yard)(?=\s|$)/ig, 1.0936, 0, "meters"); },
 	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(in|inches|inch|&quot;)(?=\s|$)/ig, 0.39370, 0, "centimeters"); },
 	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(yd|yards|yard)(?=\s|$)/ig, 1.0936, 0, "meters"); },
+	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(miles|mi)(?=\s|$)/ig, 0.62137, 0, "kilometers"); },
 	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(f|fahrenheit|degrees fahrenheit)(?=\s|$)/ig, 1.8, 32, "Celsius"); },
 	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(lb|lbs|pounds|pound)(?=\s|$)/ig, 2.2046, 0, "kilograms"); },
 	function(message) { return commonConversion(message, /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(st|stone)(?=\s|$)/ig, 0.157473, 0, "kilograms"); },
