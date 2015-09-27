@@ -1,6 +1,6 @@
 # RohBot Imperial to Metric Converter
 
-Automatically finds and converts the most common imperial units to metric. Only works in [RohBot](https://rohbot.net).
+A userscript for [RohBot](https://rohbot.net) that automatically finds and converts the most common imperial units to metric.
 
 Only tested in Chrome using [Tampermonkey](http://tampermonkey.net/).
 
