@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.11
+// @version      1.12
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -59,7 +59,6 @@ var conversions = [
 
 function applyConversions(message) {
 	var results = [];
-	var lastIndex = 0;
 
 	// aggregate the results
 	conversions.forEach(function(converter) {
@@ -67,7 +66,7 @@ function applyConversions(message) {
 
 		if (result.length > 0) {
 			//console.log(result);
-			results.splice(lastIndex++, 0, result);
+			results[results.length] = result;
 		}
 	});
 	
