@@ -9,6 +9,7 @@ Only tested in Chrome using [Tampermonkey](http://tampermonkey.net/).
 * Inches to centimeters
 * That weird feet + inch notation (ex. 5'11) to meters
 * Yards to meters
+* Miles to kilometers
 * Fahrenheit to Celsius
 * Stones to kilograms
 * Pounds to kilograms
