@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.13
+// @version      1.14
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -30,8 +30,8 @@ var conversions = [
 	{ name: "KPH", regex: /(?:\s|^)(\d+(?:(?:\.|,)\d+)?) ?(mph|miles per hour)(?=\s|$)/ig, divide: 1/1.6093 },
 	
 	{ name: "meters", specialFunc: function(message) {
-		// the &#39; there in the middle is for '
-		var regex = /(?:\s|^)(\d+(?:(?:\.|,)\d+)?)&#39;(\d+(?:(?:\.|,)\d+)?)?(?=\s|$)/ig;
+		// the &#39; there in the middle is for ' and &quot; is for "
+		var regex = /(?:\s|^)(\d+(?:(?:\.|,)\d+)?)&#39;(\d+(?:(?:\.|,)\d+)?)?(?:&quot;)?(?=\s|$)/ig;
 		var m;
 		var results = [];
 		while ((m = regex.exec(message)) !== null) {
@@ -123,7 +123,7 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		var amount = Number(m[1].replace(',', '.')); // js wants dots as decimal separators
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
 		//console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
-		results[results.length] = {original:m[0], index:m.index, conversion:converted, unit:unit};
+		results[results.length] = { original:m[0], index:m.index, conversion:converted, unit:unit };
 	}
 
 	return results;
