@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.16
+// @version      1.17
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -17,20 +17,20 @@ String.prototype.splice = function(idx, rem, s) {
 };
 
 var conversions = [
-	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(ft|feet|foot)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 3.2808 },
-	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(yd|yards|yard)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1.0936 },
-	{ name: "centimeters", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(in|inches|inch|&quot;)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.39370 },
-	{ name: "kilometers", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(miles|mi)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.62137 },
-	{ name: "Celsius", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(f|fahrenheit|degrees fahrenheit)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1.8, subtract: 32},
-	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(lb|lbs|pounds|pound)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 2.2046 },
-	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(st|stone)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.157473 },
-	{ name: "grams", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(oz|ounces|ounce)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.035274 },
-	{ name: "liters", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(gal|gallons|gallon)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.26417 },
-	{ name: "KPH", regex: /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?) ?(mph|miles per hour)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1/1.6093 },
+	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(ft|feet|foot)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 3.2808 },
+	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(yd|yards|yard)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1.0936 },
+	{ name: "centimeters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(in|inches|inch|&quot;)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.39370 },
+	{ name: "kilometers", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(miles|mi)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.62137 },
+	{ name: "Celsius", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(f|fahrenheit|degrees fahrenheit)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1.8, subtract: 32},
+	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(lb|lbs|pounds|pound)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 2.2046 },
+	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(st|stone)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.157473 },
+	{ name: "grams", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(oz|ounces|ounce)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.035274 },
+	{ name: "liters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(gal|gallons|gallon)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.26417 },
+	{ name: "KPH", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(mph|miles per hour)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1/1.6093 },
 
 	{ name: "meters", specialFunc: function(message) {
 		// the &#39; there in the middle is for ' and &quot; is for "
-		var regex = /(?:\s|^|,|\.|!|\?|\*)(\d+(?:\.\d+)?)&#39;(\d+(?:\.\d+)?)?(?:&quot;)?(?=\s|$|,|\.|!|\?|\*)/ig;
+		var regex = /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)&#39;([\d,]+(?:\.\d+)?)?(?:&quot;)?(?=\s|$|,|\.|!|\?|\*)/ig;
 		var m;
 		var results = [];
 		while ((m = regex.exec(message)) !== null) {
@@ -38,11 +38,11 @@ var conversions = [
 				regex.lastIndex++;
 			}
 
-			var feet = m[1];
+			var feet = m[1].replace(",", ""); // get rid of thousand separator commas
 			var inches = 0;
 
 			if (m[2] !== null) {
-				inches = m[2];
+				inches = m[2].replace(",", ""); // get rid of thousand separator commas
 			}
 
 			var convertedFeet = feet / 3.2808;
@@ -58,7 +58,7 @@ var conversions = [
 
 function applyConversions(message) {
 	var results = [];
-
+	
 	// aggregate the results
 	conversions.forEach(function(conversion) {
 		var result = conversion.specialFunc ? conversion.specialFunc(message) : commonConversion(message, conversion.regex, conversion.divide, conversion.subtract || 0, conversion.name);
@@ -118,11 +118,21 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		if (m.index === regex.lastIndex) {
 			regex.lastIndex++;
 		}
-
-		var amount = Number(m[1]);
+		
+		var offset = 0;
+		var amountStr = m[1];
+		
+		// remove leading comma if found
+		if (amountStr.substring(0, 1) == ",") {
+			amountStr = amountStr.substring(1);
+			m[0] = m[0].substring(1);
+			offset = 1;
+		}
+		
+		var amount = Number(amountStr.replace(",", "")); // get rid of thousand separator commas
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
 		//console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
-		results[results.length] = { original:m[0], index:m.index, conversion:converted, unit:unit };
+		results[results.length] = { original:m[0], index:m.index + offset, conversion:converted, unit:unit };
 	}
 
 	return results;
