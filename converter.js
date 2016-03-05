@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.17
+// @version      1.18
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -16,21 +16,27 @@ String.prototype.splice = function(idx, rem, s) {
 	return (this.slice(0, idx) + s + this.slice(idx + Math.abs(rem)));
 };
 
+var prefixes = {
+	"k": 1000,
+	"m": 1000000,
+	"b": 1000000000
+}
+
 var conversions = [
-	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(ft|feet|foot)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 3.2808 },
-	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(yd|yards|yard)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1.0936 },
-	{ name: "centimeters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(in|inches|inch|&quot;)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.39370 },
-	{ name: "kilometers", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(miles|mi)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.62137 },
-	{ name: "Celsius", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(f|fahrenheit|degrees fahrenheit)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1.8, subtract: 32},
-	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(lb|lbs|pounds|pound)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 2.2046 },
-	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(st|stone)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.157473 },
-	{ name: "grams", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(oz|ounces|ounce)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.035274 },
-	{ name: "liters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(gal|gallons|gallon)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.26417 },
-	{ name: "KPH", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?) ?(mph|miles per hour)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1/1.6093 },
+	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(ft|feet|foot)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 3.2808 },
+	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(yd|yards|yard)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1.0936 },
+	{ name: "centimeters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(in|inches|inch|&quot;)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.39370 },
+	{ name: "kilometers", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(miles|mi)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.62137 },
+	{ name: "Celsius", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(f|fahrenheit|degrees fahrenheit)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1.8, subtract: 32},
+	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(lb|lbs|pounds|pound)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 2.2046 },
+	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(st|stone)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.157473 },
+	{ name: "grams", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(oz|ounces|ounce)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.035274 },
+	{ name: "liters", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(gal|gallons|gallon)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 0.26417 },
+	{ name: "KPH", regex: /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])? ?(mph|miles per hour)(?=\s|$|,|\.|!|\?|\*)/ig, divide: 1/1.6093 },
 
 	{ name: "meters", specialFunc: function(message) {
 		// the &#39; there in the middle is for ' and &quot; is for "
-		var regex = /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)&#39;([\d,]+(?:\.\d+)?)?(?:&quot;)?(?=\s|$|,|\.|!|\?|\*)/ig;
+		var regex = /(?:\s|^|,|\.|!|\?|\*)([\d,]+(?:\.\d+)?)([kmb])?&#39;([\d,]+(?:\.\d+)?)([kmb])??(?:&quot;)?(?=\s|$|,|\.|!|\?|\*)/ig;
 		var m;
 		var results = [];
 		while ((m = regex.exec(message)) !== null) {
@@ -121,6 +127,7 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		
 		var offset = 0;
 		var amountStr = m[1];
+		var prefix = m[2];
 		
 		// remove leading comma if found
 		if (amountStr.substring(0, 1) == ",") {
@@ -130,6 +137,11 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		}
 		
 		var amount = Number(amountStr.replace(",", "")); // get rid of thousand separator commas
+		
+		if (prefix) {
+				amount *= prefixes[prefix];
+			}
+		
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
 		//console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
 		results[results.length] = { original:m[0], index:m.index + offset, conversion:converted, unit:unit };
