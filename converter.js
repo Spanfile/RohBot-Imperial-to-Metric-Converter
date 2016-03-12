@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.20
+// @version      1.21
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -36,7 +36,7 @@ var conversions = [
 
 	{ name: "meters", specialFunc: function(message) {
 		// the &#39; there in the middle is for ' and &quot; is for "
-		var regex = /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])?&#39;([\d,]+(?:\.\d+)?)([kmb])??(?:&quot;)?(?=\s|$|,|\.|!|\?|\*|\/)/ig;
+		var regex = /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])?&#39;(?:([\d,]+(?:\.\d+)?)([kmb])?&quot;)?(?=\s|$|,|\.|!|\?|\*|\/)/ig;
 		var m;
 		var results = [];
 		while ((m = regex.exec(message)) !== null) {
@@ -52,7 +52,7 @@ var conversions = [
 				feet *= prefixes[feetPrefix];
 			}
 
-			if (m[3] !== null) {
+			if (m[3]) {
 				inches = Number(m[3].replace(",", "")); // get rid of thousand separator commas
 				
 				if (m[4]) {
