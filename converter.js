@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.22
+// @version      1.23
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -16,7 +16,7 @@ String.prototype.splice = function(idx, rem, s) {
 	return (this.slice(0, idx) + s + this.slice(idx + Math.abs(rem)));
 };
 
-var prefixes = {
+var postfixes = {
 	"k": 1000,
 	"m": 1000000,
 	"b": 1000000000
@@ -45,18 +45,18 @@ var conversions = [
 			}
 
 			var feet = Number(m[1].replace(",", "")); // get rid of thousand separator commas
-			var feetPrefix = m[2];
+			var feetPostfix = m[2];
 			var inches = 0;
 			
-			if (feetPrefix) {
-				feet *= prefixes[feetPrefix.toLowerCase()];
+			if (feetPostfix) {
+				feet *= postfixes[feetPostfix.toLowerCase()];
 			}
 
 			if (m[3]) {
 				inches = Number(m[3].replace(",", "")); // get rid of thousand separator commas
 				
 				if (m[4]) {
-					inches *= prefixes[m[4].toLowerCase()];
+					inches *= postfixes[m[4].toLowerCase()];
 				}
 			}
 
@@ -136,7 +136,7 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		
 		var offset = 0;
 		var amountStr = m[1];
-		var prefix = m[2];
+		var postfix = m[2];
 		
 		// remove leading comma if found
 		if (amountStr.substring(0, 1) == ",") {
@@ -147,8 +147,8 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		
 		var amount = Number(amountStr.replace(",", "")); // get rid of thousand separator commas
 		
-		if (prefix) {
-			amount *= prefixes[prefix.toLowerCase()];
+		if (postfix) {
+			amount *= postfixes[postfix.toLowerCase()];
 		}
 		
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
