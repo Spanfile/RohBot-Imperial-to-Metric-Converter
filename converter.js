@@ -49,14 +49,14 @@ var conversions = [
 			var inches = 0;
 			
 			if (feetPrefix) {
-				feet *= prefixes[feetPrefix];
+				feet *= prefixes[feetPrefix.toLowerCase()];
 			}
 
 			if (m[3]) {
 				inches = Number(m[3].replace(",", "")); // get rid of thousand separator commas
 				
 				if (m[4]) {
-					inches *= prefixes[m[4]];
+					inches *= prefixes[m[4].toLowerCase()];
 				}
 			}
 
@@ -148,7 +148,7 @@ function commonConversion(message, regex, divide, subtract, unit) {
 		var amount = Number(amountStr.replace(",", "")); // get rid of thousand separator commas
 		
 		if (prefix) {
-			amount *= prefixes[prefix];
+			amount *= prefixes[prefix.toLowerCase()];
 		}
 		
 		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
