@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RohBot Imperial to Metric
-// @version      1.23
+// @version      1.24
 // @description  Converts imperial to metric if it finds any
 // @author       Spans
 // @match        https://rohbot.net
@@ -20,21 +20,21 @@ var postfixes = {
 	"k": 1000,
 	"m": 1000000,
 	"b": 1000000000
-}
+};
 
 var conversions = [
-	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(ft|feet|foot)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 3.2808 },
-	{ name: "meters", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(yd|yards|yard)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 1.0936 },
-	{ name: "centimeters", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(in|inches|inch|&quot;)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 0.39370 },
-	{ name: "kilometers", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(miles|mi)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 0.62137 },
-	{ name: "Celsius", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(f|fahrenheit|degrees fahrenheit)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 1.8, subtract: 32},
-	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(lb|lbs|pounds|pound)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 2.2046 },
-	{ name: "kilograms", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(st|stone)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 0.157473 },
-	{ name: "grams", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(oz|ounces|ounce)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 0.035274 },
-	{ name: "liters", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(gal|gallons|gallon)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 0.26417 },
-	{ name: "KPH", regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(mph|miles per hour)(?=\s|$|,|\.|!|\?|\*|\/)/ig, divide: 1/1.6093 },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(ft|feet|foot)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "meters", divide: 3.2808 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(yd|yards|yard)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "meters", divide: 1.0936 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(in|inches|inch|&quot;)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "centimeters", divide: 0.39370 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(miles|mi)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "kilometers", divide: 0.62137 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(f|fahrenheit|degrees fahrenheit)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "Celsius", divide: 1.8, subtract: 32 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(lb|lbs|pounds|pound)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "kilograms", divide: 2.2046 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(st|stone)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "kilograms", divide: 0.157473 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(oz|ounces|ounce)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "grams", divide: 0.035274 }, { name: "liters", divide: 33.814 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(gal|gallons|gallon)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "liters", divide: 0.26417 } ] },
+	{ regex: /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])? ?(mph|miles per hour)(?=\s|$|,|\.|!|\?|\*|\/)/ig, names: [ { name: "KPH", divide: 1/1.6093 } ] },
 
-	{ name: "meters", specialFunc: function(message) {
+	{ specialFunc: function(message) {
 		// the &#39; there in the middle is for ' and &quot; is for "
 		var regex = /(?:\s|^|,|\.|!|\?|\*|\/)([\d,]+(?:\.\d+)?)([kmb])?&#39;(?:([\d,]+(?:\.\d+)?)([kmb])?&quot;)?(?=\s|$|,|\.|!|\?|\*|\/)/ig;
 		var m;
@@ -64,7 +64,7 @@ var conversions = [
 			var convertedInches = inches / 39.370;
 
 			var total = Math.round((convertedFeet + convertedInches) * 100) / 100;
-			results[results.length] = {original:m[0], index:m.index, conversion:total, unit:"meters"};
+			results.push({original: m[0], index: m.index, conversion: total.toLocaleString() + "meters"});
 		}
 
 		return results;
@@ -75,12 +75,11 @@ function applyConversions(message) {
 	var results = [];
 	
 	// aggregate the results
-	conversions.forEach(function(conversion) {
-		var result = conversion.specialFunc ? conversion.specialFunc(message) : commonConversion(message, conversion.regex, conversion.divide, conversion.subtract || 0, conversion.name);
-
+	conversions.forEach(function(conv) {
+		var result = conv.specialFunc ? conv.specialFunc(message) : commonConversion(message, conv);
+		
 		if (result.length > 0) {
-			//console.log(result);
-			results[results.length] = result;
+			results.push(result);
 		}
 	});
 
@@ -106,7 +105,6 @@ function applyConversions(message) {
 	var inserted = 0;
 	// combine them all
 	flattened.forEach(function(result) {
-		var title = result.conversion.toLocaleString() + " " + result.unit;
 		var original = result.original;
 		var begin = "";
 
@@ -118,17 +116,19 @@ function applyConversions(message) {
 			begin = " ";
 		}
 
-		var toInsert = begin + "<abbr title=\"" + title + "\" style=\"cursor:help; border-bottom:1px dotted #777\">" + original + "</abbr>";
+		var toInsert = begin + "<abbr title=\"" + result.conversion + "\" style=\"cursor:help; border-bottom:1px dotted #777\">" + original + "</abbr>";
 		newMsg = newMsg.splice(result.index + inserted, result.original.length, toInsert);
+        console.log(newMsg);
 		inserted += toInsert.length - result.original.length;
 	});
 
 	return newMsg;
 }
 
-function commonConversion(message, regex, divide, subtract, unit) {
+function commonConversion(message, conversion) {
 	var m;
 	var results = [];
+    var regex = conversion.regex;
 	while ((m = regex.exec(message)) !== null) {
 		if (m.index === regex.lastIndex) {
 			regex.lastIndex++;
@@ -151,9 +151,15 @@ function commonConversion(message, regex, divide, subtract, unit) {
 			amount *= postfixes[postfix.toLowerCase()];
 		}
 		
-		var converted = Math.round(((amount - subtract) / divide) * 100) / 100;
-		//console.log("Conversion: " + amount + " "  + m[2] + " to " + converted + " " + unit);
-		results[results.length] = { original:m[0], index:m.index + offset, conversion:converted, unit:unit };
+        var allConversions = [];
+		conversion.names.forEach(function(name) {
+			var converted = Math.round(((amount - (name.subtract || 0)) / name.divide) * 100) / 100;
+			console.log("Conversion: " + amount + " to " + converted + " " + name.name);
+            allConversions.push(converted.toLocaleString() + " " + name.name);
+		});
+        
+        var result =  { original: m[0], index: m.index + offset, conversion: allConversions.join(" or ") };
+        results.push(result);
 	}
 
 	return results;
